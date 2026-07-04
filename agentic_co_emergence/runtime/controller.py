@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from agentic_co_emergence.models.agent_state import AgentState
+from agentic_co_emergence.models.contribution import Contribution
 from agentic_co_emergence.models.discussion_state import DiscussionState
 from agentic_co_emergence.models.perspective import PerspectivePack
 
@@ -21,4 +24,14 @@ def initialise_discussion(pack: PerspectivePack) -> DiscussionState:
         transcript=[],
         round_number=0,
         is_open=True,
+    )
+
+
+def add_contribution(
+    state: DiscussionState,
+    contribution: Contribution,
+) -> DiscussionState:
+    return replace(
+        state,
+        transcript=[*state.transcript, contribution],
     )
