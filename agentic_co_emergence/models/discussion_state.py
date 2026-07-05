@@ -10,7 +10,7 @@ from agentic_co_emergence.models.perspective import PerspectivePack
 class DiscussionState:
     perspective_pack: PerspectivePack
     agent_states: tuple[AgentState, ...]
-    transcript: list = field(default_factory=list)
+    transcript: list[dict[str, str]] = field(default_factory=list)
     round_number: int = 0
     is_open: bool = True
 
