@@ -47,3 +47,34 @@ def test_understanding_delta_identifies_new_transcript_items_as_candidate_claims
     assert delta.new_questions == []
     assert delta.new_tensions == []
     assert delta.summary == "1 new claim(s) identified."
+
+def test_understanding_delta_handles_multiple_new_transcript_items():
+    """
+    Milestone 0.3
+
+    Multiple new transcript items should produce multiple candidate claims.
+    """
+
+    before = DiscussionState(
+        perspective_pack=None,
+        agent_states=(),
+        transcript=["Tenzing: Initial claim."],
+    )
+
+    after = DiscussionState(
+        perspective_pack=None,
+        agent_states=(),
+        transcript=[
+            "Tenzing: Initial claim.",
+            "Aletheia: A second claim.",
+            "Joan: A third claim.",
+        ],
+    )
+
+    delta = build_understanding_delta(before, after)
+
+    assert delta.new_claims == [
+        "Aletheia: A second claim.",
+        "Joan: A third claim.",
+    ]
+    assert delta.summary == "2 new claim(s) identified."
