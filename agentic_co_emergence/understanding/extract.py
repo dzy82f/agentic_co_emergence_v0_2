@@ -11,15 +11,17 @@ def build_understanding_delta(
     """
     Build a minimal UnderstandingDelta from two DiscussionStates.
 
-    Milestone 0.3: first implementation.
-
-    For now, newly added transcript items are treated as candidate new claims.
+    Newly added transcript items are treated as candidate new claims.
+    Structured transcript items expose their text field as the claim.
     """
 
     before_count = len(before.transcript)
     after_items = after.transcript[before_count:]
 
-    new_claims = [str(item) for item in after_items]
+    new_claims = [
+        item.get("text", str(item)) if isinstance(item, dict) else str(item)
+        for item in after_items
+    ]
 
     return UnderstandingDelta(
         new_claims=new_claims,
