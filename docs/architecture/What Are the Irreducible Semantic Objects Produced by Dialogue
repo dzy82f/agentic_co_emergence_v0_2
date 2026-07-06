@@ -1,0 +1,444 @@
+# Design Note: What Are the Irreducible Semantic Objects Produced by Dialogue?
+
+## Purpose
+
+This note proposes a minimal set of semantic objects that are created by dialogue and which cannot be reduced further without losing explanatory power. These objects form the semantic substrate of Agentic Co-Emergence and provide the foundation upon which higher-level reasoning, synthesis, memory and understanding can be built.
+
+The guiding principle is:
+
+> **Dialogue should be modelled by the smallest set of semantic objects capable of explaining how understanding evolves.**
+
+---
+
+# The Wrong Starting Point
+
+Traditional conversational systems typically model dialogue as a sequence of messages.
+
+```
+Message
+↓
+Message
+↓
+Message
+```
+
+This is computationally convenient but semantically poor.
+
+Messages are merely containers.
+
+They tell us **what was said**, but not **what changed**.
+
+Two conversations containing completely different wording may nevertheless produce identical understanding.
+
+Likewise, identical wording can produce entirely different understanding depending on context.
+
+Therefore messages themselves cannot be the primitive semantic object.
+
+---
+
+# Dialogue Produces Change
+
+Every meaningful contribution alters something.
+
+Perhaps it introduces a new idea.
+
+Perhaps it removes a misconception.
+
+Perhaps it strengthens confidence.
+
+Perhaps it links two concepts.
+
+Perhaps it exposes a contradiction.
+
+The important observation is that dialogue is not fundamentally about producing text.
+
+It is about producing **changes to understanding**.
+
+The question therefore becomes:
+
+> What kinds of change are irreducible?
+
+---
+
+# Candidate Semantic Objects
+
+Several possibilities present themselves.
+
+### Messages
+
+Too syntactic.
+
+They describe language rather than meaning.
+
+---
+
+### Claims
+
+Closer.
+
+Claims capture propositional content.
+
+However dialogue produces far more than isolated propositions.
+
+---
+
+### Facts
+
+Too strong.
+
+Dialogue frequently explores possibilities rather than established truths.
+
+---
+
+### Arguments
+
+Useful structures.
+
+But arguments are compositions of smaller semantic units.
+
+---
+
+### Knowledge Graphs
+
+Again useful.
+
+But graphs are data structures built from more primitive semantic objects.
+
+---
+
+### Understanding
+
+Appealing.
+
+But "understanding" is not itself produced in one step.
+
+It evolves through many small changes.
+
+Understanding therefore appears to be an accumulated state rather than an irreducible object.
+
+---
+
+# A Better Candidate: Semantic Deltas
+
+The smallest meaningful product of dialogue is not a message.
+
+It is not a claim.
+
+It is not understanding.
+
+It is **a change in understanding.**
+
+We therefore define:
+
+> **Semantic Delta**
+>
+> The smallest meaningful transformation of an understanding landscape produced by a conversational act.
+
+Everything else is accumulated from these.
+
+---
+
+# Properties of a Semantic Delta
+
+A semantic delta should satisfy several conditions.
+
+## Atomic
+
+It cannot be decomposed into smaller semantic changes without losing meaning.
+
+---
+
+## Directional
+
+A delta transforms one state into another.
+
+```
+Understanding(t)
+
+↓
+
+Semantic Delta
+
+↓
+
+Understanding(t+1)
+```
+
+---
+
+## Typed
+
+Different deltas perform different functions.
+
+Examples include:
+
+* introduce concept
+* refine concept
+* strengthen belief
+* weaken belief
+* expose contradiction
+* create relationship
+* remove relationship
+* increase confidence
+* reduce confidence
+* identify uncertainty
+* resolve uncertainty
+* broaden scope
+* narrow scope
+
+Each represents a distinct semantic operation.
+
+---
+
+## Composable
+
+Multiple deltas accumulate.
+
+```
+Δ₁
++
+Δ₂
++
+Δ₃
+
+↓
+
+Updated understanding
+```
+
+Dialogue therefore becomes composition rather than transcription.
+
+---
+
+# The State Transformation View
+
+Instead of modelling dialogue as messages,
+
+```
+Message₁
+
+↓
+
+Message₂
+
+↓
+
+Message₃
+```
+
+we model
+
+```
+Understanding₀
+
+↓
+
+Δ₁
+
+↓
+
+Understanding₁
+
+↓
+
+Δ₂
+
+↓
+
+Understanding₂
+
+↓
+
+Δ₃
+
+↓
+
+Understanding₃
+```
+
+This shifts the computational focus away from language and toward cognition.
+
+---
+
+# Higher-Level Objects
+
+Once semantic deltas exist, every larger construct becomes an accumulation.
+
+For example:
+
+### Concept
+
+A stable cluster of semantic deltas.
+
+---
+
+### Perspective
+
+A coherent subset of concepts plus weighting.
+
+---
+
+### Mental Model
+
+An organised network of concepts and relationships.
+
+---
+
+### Knowledge
+
+A sufficiently stable region of understanding.
+
+---
+
+### Shared Understanding
+
+The intersection of multiple understanding landscapes after repeated semantic exchange.
+
+---
+
+### Synthesis
+
+A newly coherent organisation of previously separate semantic structures.
+
+---
+
+### Insight
+
+A semantic delta whose impact is disproportionately large relative to its size.
+
+---
+
+### Wisdom
+
+An understanding landscape that consistently generates useful semantic deltas.
+
+---
+
+# Implications for Agentic Co-Emergence
+
+This perspective changes what agents should produce.
+
+Instead of generating text, each agent should produce semantic deltas.
+
+For example:
+
+```
+Ada
+
+↓
+
+Δ₁:
+Introduce ethical constraint.
+
+Tenzing
+
+↓
+
+Δ₂:
+Link ethical constraint to systems stability.
+
+Harry
+
+↓
+
+Δ₃:
+Challenge hidden assumption.
+
+Aletheia
+
+↓
+
+Δ₄:
+Reframe problem definition.
+```
+
+The runtime no longer asks
+
+> "What did each agent say?"
+
+Instead it asks
+
+> "What semantic transformation did each contribution perform?"
+
+This is a considerably richer representation.
+
+---
+
+# Memory
+
+Memory also becomes simpler.
+
+Rather than storing conversations, the system stores accumulated semantic deltas.
+
+This allows reconstruction of understanding without preserving every linguistic expression.
+
+Language becomes an implementation detail.
+
+Meaning becomes the persistent artefact.
+
+---
+
+# Understanding as an Emergent Object
+
+Understanding itself is therefore not primitive.
+
+It is emergent.
+
+```
+Understanding
+
+=
+
+Σ Semantic Deltas
+```
+
+More precisely,
+
+```
+Understanding(t)
+
+=
+
+Understanding(0)
+
++
+
+Σ Δ
+```
+
+The understanding landscape is simply the cumulative result of every semantic transformation experienced by the system.
+
+---
+
+# Design Consequences
+
+If semantic deltas are accepted as the irreducible object produced by dialogue, several architectural decisions follow naturally.
+
+* Messages become transient carriers rather than durable semantic artefacts.
+* Conversation histories become ordered sequences of semantic transformations.
+* Agent evaluation shifts from linguistic fluency to semantic contribution.
+* Synthesis becomes the composition of compatible semantic deltas.
+* Memory stores semantic evolution rather than textual history.
+* Understanding becomes an explicitly computable state rather than an implicit consequence of accumulated conversation.
+
+This provides a cleaner separation between language and cognition and aligns the runtime with the phenomenon it seeks to model: the gradual transformation of understanding through dialogue.
+
+---
+
+# Conclusion
+
+The irreducible semantic object produced by dialogue is neither the message nor the claim, but the **Semantic Delta**: the smallest meaningful change to an understanding landscape.
+
+Messages express language.
+
+Claims express propositions.
+
+Arguments express reasoning.
+
+Knowledge expresses accumulated structure.
+
+Understanding expresses the current semantic state.
+
+Only the semantic delta expresses **change**, and dialogue is fundamentally a process of change.
+
+Accordingly, Agentic Co-Emergence should be viewed as a governed sequence of semantic state transformations in which understanding emerges through the accumulation and composition of semantic deltas. Everything else—concepts, perspectives, knowledge, synthesis, and even shared understanding—is built upon this foundation.
