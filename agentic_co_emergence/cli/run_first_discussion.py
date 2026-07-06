@@ -40,18 +40,47 @@ def run_first_discussion(perspective_pack_path: str | Path) -> DiscussionState:
     return engine.current_state()
 
 
+def write_transcript_markdown(
+    state: DiscussionState,
+    output_path: str | Path,
+) -> None:
+    output_path = Path(output_path)
+
+    lines = [
+        "# Discussion Transcript",
+        "",
+        "## Question",
+        "",
+        state.perspective_pack["question"],
+        "",
+        "## Contributions",
+        "",
+    ]
+
+    for entry in state.transcript:
+        lines.extend(
+            [
+                f"### {entry['agent_name']}",
+                "",
+                entry["contribution"],
+                "",
+            ]
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def main() -> None:
     pack_path = Path("perspective_pack.json")
     final_state = run_first_discussion(pack_path)
 
+    output_path = Path("artefacts/transcripts/first_discussion_transcript.md")
+    write_transcript_markdown(final_state, output_path)
+
     print(f"Question: {final_state.perspective_pack['question']}")
     print(f"Contributions: {final_state.contribution_count}")
-    print()
-
-    for entry in final_state.transcript:
-        print(f"{entry['agent_name']}:")
-        print(entry["contribution"])
-        print()
+    print(f"Markdown: {output_path}")
 
 
 if __name__ == "__main__":
