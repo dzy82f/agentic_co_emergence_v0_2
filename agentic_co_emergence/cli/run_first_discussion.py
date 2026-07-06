@@ -8,6 +8,12 @@ from agentic_co_emergence.models.discussion_state import DiscussionState
 from agentic_co_emergence.transition_engine import DiscussionTransitionEngine
 
 
+DEFAULT_PACK_PATH = Path("perspective_pack.json")
+DEFAULT_TRANSCRIPT_PATH = Path(
+    "artefacts/transcripts/first_discussion_transcript.md"
+)
+
+
 def load_perspective_pack(path: str | Path) -> dict:
     with Path(path).open("r", encoding="utf-8") as f:
         return json.load(f)
@@ -72,15 +78,12 @@ def write_transcript_markdown(
 
 
 def main() -> None:
-    pack_path = Path("perspective_pack.json")
-    final_state = run_first_discussion(pack_path)
-
-    output_path = Path("artefacts/transcripts/first_discussion_transcript.md")
-    write_transcript_markdown(final_state, output_path)
+    final_state = run_first_discussion(DEFAULT_PACK_PATH)
+    write_transcript_markdown(final_state, DEFAULT_TRANSCRIPT_PATH)
 
     print(f"Question: {final_state.perspective_pack['question']}")
     print(f"Contributions: {final_state.contribution_count}")
-    print(f"Markdown: {output_path}")
+    print(f"Markdown: {DEFAULT_TRANSCRIPT_PATH}")
 
 
 if __name__ == "__main__":
