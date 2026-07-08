@@ -1,54 +1,49 @@
-\# NEXT
+# NEXT
 
+## Current Position
 
+Milestone 0.4 — Executable Discussion Runtime
 
-\## Current Position
+43 acceptance and unit tests passing.
 
+Implemented:
 
+- Perspective Pack loading
+- DiscussionState
+- DiscussionEvent
+- TransitionValidator
+- TransitionEngine
+- RuntimeController
+- SemanticState
+- Claim extraction
+- UnderstandingDelta
+- Markdown reporting
 
-Milestone 0.1 — Executable Theory is complete.
+The current runtime can execute a governed discussion and produce discussion artefacts.
 
+---
 
+## Next Milestone
 
-All 10 acceptance tests pass.
+Milestone 0.5 — Demonstrate Emergent Understanding
 
+## Research Question
 
+Can the current computational model produce a change in collective understanding that is not reducible to any individual contribution?
 
-\## Next Milestone
+## Acceptance Criterion
 
+Given a Perspective Pack and a discussion:
 
+- execute a complete discussion
+- produce a transcript
+- extract claims
+- construct an UnderstandingDelta
+- demonstrate that the resulting understanding contains at least one synthesised insight beyond any single contribution
 
-Milestone 0.2 — State Transition
+## Constraints
 
-
-
-\## Theory to Implement
-
-
-
-A discussion evolves when an accepted contribution transforms one valid DiscussionState into a new valid DiscussionState.
-
-
-
-\## Next Acceptance Test
-
-
-
-Accepting a contribution must return a new DiscussionState without mutating the original state.
-
-
-
-\## Constraints
-
-
-
-\- No DiscussionEvent yet.
-
-\- No persistence layer.
-
-\- No agent state.
-
-\- No collective understanding model yet.
-
-\- No new abstraction unless required by theory and observable by an acceptance test.
-
+- No additional runtime abstractions unless demanded by experiment.
+- Prefer experiments over architecture.
+- Treat UnderstandingDelta as provisional until validated by repeated runs.
+- Keep the theory and implementation aligned.
