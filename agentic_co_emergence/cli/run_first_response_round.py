@@ -31,13 +31,20 @@ def build_response_contribution(
 ) -> str:
     return (
         f"I want to respond to {target}. "
-        f"Their perspective raises an important point: {target_contribution} "
-        f"My role in this first response round is not to replace that view, "
-        f"but to test what it brings into the shared discussion."
+        f"Their perspective gives the shared discussion a concrete claim to work with: "
+        f"{target_contribution} "
+        f"I would extend this by asking what follows if that claim is true, "
+        f"where it may be too narrow, and what it reveals when placed alongside "
+        f"the other perspectives in the pack. "
+        f"So my response is not a restatement of {target}'s view; "
+        f"it is a refinement of the question through their contribution "
+        f"to the shared discussion."
     )
 
 
-def run_first_response_round(perspective_pack_path: str | Path) -> DiscussionState:
+def run_first_response_round(
+    perspective_pack_path: str | Path = DEFAULT_PACK_PATH,
+) -> DiscussionState:
     perspective_pack = load_perspective_pack(perspective_pack_path)
     state = build_initial_state(perspective_pack)
 
@@ -52,18 +59,18 @@ def run_first_response_round(perspective_pack_path: str | Path) -> DiscussionSta
     ]
 
     for responder, target_perspective in response_pairs:
+        contribution = build_response_contribution(
+            responder=responder,
+            target=target_perspective["persona"],
+            target_contribution=target_perspective["initial_perspective"],
+        )
+
         engine.step(
             DiscussionEvent(
                 kind="agent_contribution",
                 payload={
                     "agent_name": responder,
-                    "contribution": build_response_contribution(
-                        responder=responder,
-                        target=target_perspective["persona"],
-                        target_contribution=target_perspective[
-                            "initial_perspective"
-                        ],
-                    ),
+                    "contribution": contribution,
                 },
             )
         )
