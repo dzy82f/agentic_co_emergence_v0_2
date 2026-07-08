@@ -23,6 +23,9 @@ class DiscussionTransitionEngine:
                 "contribution": event.payload["contribution"],
             }
 
+            if "response_to" in event.payload:
+                record["response_to"] = event.payload["response_to"]
+
             self.state = replace(
                 self.state,
                 transcript=[*self.state.transcript, record],
