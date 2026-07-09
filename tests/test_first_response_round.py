@@ -3,24 +3,21 @@ from agentic_co_emergence.cli.run_first_response_round import (
 )
 
 
-def test_first_response_round_records_response_targets():
-    state = run_first_response_round()
+def test_first_response_round_uses_transcript_so_far_for_deliberation():
+    prompts: list[str] = []
+
+    def fake_response_generator(prompt: str) -> str:
+        prompts.append(prompt)
+        return "I am responding to the discussion so far."
+
+    state = run_first_response_round(response_generator=fake_response_generator)
 
     assert state.contribution_count > 1
+    assert len(prompts) == state.contribution_count - 1
 
-    for index, contribution in enumerate(state.transcript):
-        if index == 0:
-            assert "response_to" not in contribution
-            continue
+    for contribution in state.transcript:
+        assert "agent_name" in contribution
+        assert "contribution" in contribution
 
-        response_to = contribution["response_to"]
-
-        assert response_to["contribution_index"] < index
-        assert response_to["agent_name"] != contribution["agent_name"]
-        assert response_to["relation"] in {
-            "extends",
-            "questions",
-            "disagrees",
-            "supports",
-            "synthesises",
-        }
+    assert "Discussion so far:" in prompts[0]
+    assert state.transcript[0]["contribution"] in prompts[0]
