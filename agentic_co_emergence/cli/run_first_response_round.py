@@ -10,6 +10,10 @@ from agentic_co_emergence.cli.run_first_discussion import (
     write_transcript_markdown,
 )
 from agentic_co_emergence.dialogue_relationship import choose_dialogue_relationship
+from agentic_co_emergence.llm_response_generation import (
+    ResponseGenerator,
+    generate_response_text,
+)
 from agentic_co_emergence.models.discussion_event import DiscussionEvent
 from agentic_co_emergence.models.discussion_state import DiscussionState
 from agentic_co_emergence.transition_engine import DiscussionTransitionEngine
@@ -106,73 +110,17 @@ def build_response_prompt(
     stance: str,
 ) -> str:
     return (
-        f"Respond to {target_name}. "
-        f"They nominated {target_nominee}. "
-        f"Their reason, in summary, is: {target_reason_summary}\n\n"
-        f"Your own nominee is {own_nominee}. "
-        f"Your reason, in summary, is: {own_reason_summary}\n\n"
-        f"Your stance is: {stance}. "
-        "Write a contribution that visibly enacts that stance while genuinely engaging with their reasoning."
-    )
-
-
-def build_response_text(
-    *,
-    target_name: str,
-    target_nominee: str,
-    target_reason_summary: str,
-    own_nominee: str,
-    own_reason_summary: str,
-    stance: str,
-) -> str:
-    if stance == "question":
-        return (
-            f"{target_name}'s case for {target_nominee} raises a question for me. "
-            f"If the core reason is that {target_reason_summary} "
-            f"then is the thinker underrated because their work was neglected, or because it was absorbed without being recognised? "
-            f"My own nominee, {own_nominee}, points toward a related issue: {own_reason_summary} "
-            "That makes me wonder whether we are comparing thinkers, or comparing different kinds of invisibility."
-        )
-
-    if stance == "disagree":
-        return (
-            f"I am not fully persuaded by {target_name}'s case for {target_nominee}. "
-            f"The argument is that {target_reason_summary} "
-            "but that may show difficulty of classification more than genuine underrating. "
-            f"My own nominee, {own_nominee}, seems more clearly underrated because {own_reason_summary} "
-            "The distinction matters: being hard to categorise is not quite the same as being denied proper intellectual credit."
-        )
-
-    if stance == "support":
-        return (
-            f"I think {target_name}'s case for {target_nominee} is stronger than it may first appear. "
-            f"The point that {target_reason_summary} identifies a real mechanism of neglect. "
-            f"My own nominee, {own_nominee}, reinforces that pattern in another register: {own_reason_summary} "
-            "So I would support the underlying claim: underrated thinkers are often those whose influence is present everywhere, while their name remains strangely absent."
-        )
-
-    if stance == "synthesise":
-        return (
-            f"I would bring {target_name}'s case for {target_nominee} together with my own case for {own_nominee}. "
-            f"In one case, the issue is that {target_reason_summary} "
-            f"In the other, it is that {own_reason_summary} "
-            "Taken together, they suggest that underrating has at least two forms: hidden influence and canonical misfit. "
-            "The more interesting answer may not be which nominee wins, but what the comparison reveals about how philosophy remembers its debts."
-        )
-
-    if target_nominee == own_nominee:
-        return (
-            f"I agree with {target_name}'s choice of {target_nominee}, but I would extend the reason. "
-            f"{target_name}'s case is that {target_reason_summary} "
-            f"I would add that {own_reason_summary} "
-            "Together, those points suggest that the thinker is underrated not because their contribution is small, but because it cuts across the categories by which philosophy is usually taught."
-        )
-
-    return (
-        f"I would extend {target_name}'s case for {target_nominee} rather than simply replace it with my own. "
-        f"Their argument is that {target_reason_summary} "
-        f"My own nominee, {own_nominee}, is underrated because {own_reason_summary} "
-        "The contrast helps map different mechanisms of philosophical neglect: one rooted in uncredited influence, another in a failure of canonical fit."
+        f"You are responding to {target_name} in a structured deliberation.\n\n"
+        f"{target_name}'s nominee: {target_nominee}\n"
+        f"{target_name}'s reason: {target_reason_summary}\n\n"
+        f"Your nominee: {own_nominee}\n"
+        f"Your reason: {own_reason_summary}\n\n"
+        f"Your required stance: {stance}\n\n"
+        "Write one concise contribution that genuinely engages with the target's reasoning.\n"
+        "Do not merely repeat your own original view.\n"
+        "Do not announce the metadata.\n"
+        "Make the stance visible through the substance of the response.\n"
+        "Return only the contribution text."
     )
 
 
@@ -183,6 +131,7 @@ def build_response_payload(
     target: dict[str, str],
     target_index: int,
     stance: str,
+    response_generator: ResponseGenerator | None = None,
 ) -> dict[str, object]:
     target_name = target["persona"]
     target_text = target["initial_perspective"]
@@ -193,29 +142,27 @@ def build_response_payload(
     target_reason_summary = summarize_reason(target_text)
     own_reason_summary = summarize_reason(own_text)
 
+    response_prompt = build_response_prompt(
+        target_name=target_name,
+        target_nominee=target_nominee,
+        target_reason_summary=target_reason_summary,
+        own_nominee=own_nominee,
+        own_reason_summary=own_reason_summary,
+        stance=stance,
+    )
+
     return {
         "agent_name": agent_name,
-        "contribution": build_response_text(
-            target_name=target_name,
-            target_nominee=target_nominee,
-            target_reason_summary=target_reason_summary,
-            own_nominee=own_nominee,
-            own_reason_summary=own_reason_summary,
-            stance=stance,
+        "contribution": generate_response_text(
+            prompt=response_prompt,
+            response_generator=response_generator,
         ),
         "response_to": {
             "agent_name": target_name,
             "contribution_index": target_index,
             "relation": relation_for_stance(stance),
         },
-        "response_prompt": build_response_prompt(
-            target_name=target_name,
-            target_nominee=target_nominee,
-            target_reason_summary=target_reason_summary,
-            own_nominee=own_nominee,
-            own_reason_summary=own_reason_summary,
-            stance=stance,
-        ),
+        "response_prompt": response_prompt,
     }
 
 
@@ -233,6 +180,7 @@ def find_perspective_index_by_persona(
 
 def run_first_response_round(
     pack_path: str | Path = DEFAULT_PACK_PATH,
+    response_generator: ResponseGenerator | None = None,
 ) -> DiscussionState:
     pack = load_perspective_pack(pack_path)
 
@@ -266,6 +214,7 @@ def run_first_response_round(
                 target=perspectives[target_index],
                 target_index=target_index,
                 stance=relationship["stance"],
+                response_generator=response_generator,
             )
 
         state = engine.step(
