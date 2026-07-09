@@ -9,6 +9,7 @@ from agentic_co_emergence.cli.run_first_discussion import (
     load_perspective_pack,
     write_transcript_markdown,
 )
+from agentic_co_emergence.dialogue_relationship import choose_dialogue_relationship
 from agentic_co_emergence.models.discussion_event import DiscussionEvent
 from agentic_co_emergence.models.discussion_state import DiscussionState
 from agentic_co_emergence.transition_engine import DiscussionTransitionEngine
@@ -17,14 +18,6 @@ from agentic_co_emergence.transition_engine import DiscussionTransitionEngine
 DEFAULT_RESPONSE_TRANSCRIPT_PATH = Path(
     "artefacts/transcripts/first_response_round_transcript.md"
 )
-
-RESPONSE_RELATIONS = [
-    "extends",
-    "questions",
-    "disagrees",
-    "supports",
-    "synthesises",
-]
 
 KNOWN_NOMINEES = {
     "charles sanders peirce": "Charles Sanders Peirce",
@@ -89,6 +82,18 @@ def summarize_reason(text: str) -> str:
         return sentences[0]
 
     return "no reason was supplied"
+
+
+def relation_for_stance(stance: str) -> str:
+    relation_by_stance = {
+        "extend": "extends",
+        "question": "questions",
+        "disagree": "disagrees",
+        "support": "supports",
+        "synthesise": "synthesises",
+    }
+
+    return relation_by_stance.get(stance, stance)
 
 
 def build_response_prompt(
@@ -177,6 +182,18 @@ def build_response_payload(
     }
 
 
+def find_perspective_index_by_persona(
+    *,
+    perspectives: list[dict[str, str]],
+    persona: str,
+) -> int:
+    for index, perspective in enumerate(perspectives):
+        if perspective["persona"] == persona:
+            return index
+
+    raise ValueError(f"No perspective found for persona: {persona}")
+
+
 def run_first_response_round(
     pack_path: str | Path = DEFAULT_PACK_PATH,
 ) -> DiscussionState:
@@ -196,15 +213,22 @@ def run_first_response_round(
                 "contribution": perspective["initial_perspective"],
             }
         else:
-            target_index = index - 1
-            relation = RESPONSE_RELATIONS[target_index % len(RESPONSE_RELATIONS)]
+            relationship = choose_dialogue_relationship(
+                state=state,
+                responding_agent_name=agent_name,
+            )
+
+            target_index = find_perspective_index_by_persona(
+                perspectives=perspectives,
+                persona=relationship["responds_to"],
+            )
 
             payload = build_response_payload(
                 agent_name=agent_name,
                 perspective=perspective,
                 target=perspectives[target_index],
                 target_index=target_index,
-                relation=relation,
+                relation=relation_for_stance(relationship["stance"]),
             )
 
         state = engine.step(
