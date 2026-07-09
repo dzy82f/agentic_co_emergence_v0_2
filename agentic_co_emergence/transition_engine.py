@@ -23,8 +23,9 @@ class DiscussionTransitionEngine:
                 "contribution": event.payload["contribution"],
             }
 
-            if "response_to" in event.payload:
-                record["response_to"] = event.payload["response_to"]
+            for key, value in event.payload.items():
+                if key not in {"agent_name", "contribution"}:
+                    record[key] = value
 
             self.state = replace(
                 self.state,
